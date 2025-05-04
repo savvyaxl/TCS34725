@@ -40,7 +40,7 @@ print("my IP addr:", wifi.radio.ipv4_address)
 
 import ssl
 import socketpool
-import adafruit_minimqtt.adafruit_minimqtt as MQTT
+import adafruit_minimqtt.adafruit_minimqtt as MQTT # type: ignore
 
 readableMACaddress = ''.join(['%02X' % i for i in wifi.radio.mac_address])
 print("MAC Address:", readableMACaddress)
