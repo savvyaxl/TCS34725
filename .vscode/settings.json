@@ -7,7 +7,8 @@
     "python.analysis.extraPaths": [
         "c:\\Users\\savvy\\.vscode\\extensions\\wmerkens.vscode-circuitpython-v2-0.3.3\\boards\\0x303A\\0x80C3",
         "c:\\Users\\savvy\\.vscode\\extensions\\wmerkens.vscode-circuitpython-v2-0.3.3\\stubs",
-        ""
+        "",
+        "./lib"
     ],
     "circuitpython.board.vid": "0x303A",
     "circuitpython.board.pid": "0x80C3"

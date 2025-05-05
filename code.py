@@ -18,6 +18,9 @@ mqttport = 1883
 mqttuser = 'admin'
 mqttpass = 'admin'
 
+print(dir("/"))
+help("modules")
+
 for network in wifi.radio.start_scanning_networks():
     networks.append(network)
 wifi.radio.stop_scanning_networks()
@@ -124,5 +127,95 @@ mqtt_client.publish(mqtt_topic, "Hello Broker!")
 print("Unsubscribing from %s" % mqtt_topic)
 mqtt_client.unsubscribe(mqtt_topic)
 
-print("Disconnecting from %s" % mqtt_client.broker)
-mqtt_client.disconnect()
+# print("Disconnecting from %s" % mqtt_client.broker)
+# mqtt_client.disconnect()
+
+
+
+print(board.SCL)
+print(board.SDA)
+
+# while True:
+#     print("sleep")
+#     time.sleep(100.0)
+
+import time
+
+# List of potential I2C busses
+ALL_I2C = ("board.I2C()", "board.STEMMA_I2C()")
+
+# Determine which busses are valid
+found_i2c = []
+for name in ALL_I2C:
+    try:
+        print("Checking {}...".format(name), end="")
+        bus = eval(name)
+        bus.unlock()
+        found_i2c.append((name, bus))
+        print("ADDED.")
+    except Exception as e:
+        print("SKIPPED:", e)
+
+# Scan valid busses
+if len(found_i2c):
+    print("-" * 40)
+    print("I2C SCAN")
+    print("-" * 40)
+    for bus_info in found_i2c:
+        name = bus_info[0]
+        bus = bus_info[1]
+
+        while not bus.try_lock():
+            pass
+
+        print(
+            name,
+            "addresses found:",
+            [hex(device_address) for device_address in bus.scan()],
+        )
+
+        bus.unlock()
+
+    time.sleep(2)
+else:
+    print("No valid I2C bus found.")
+
+
+# import Adafruit_CircuitPython_TCS34725.adafruit_tcs34725 as TCS
+import adafruit_tcs34725
+
+# Create sensor object, communicating over the board's default I2C bus
+i2c = board.I2C()  # uses board.SCL and board.SDA
+# i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
+# sensor = TCS.TCS34725(i2c)
+sensor = adafruit_tcs34725.TCS34725(i2c)
+
+
+# Change sensor integration time to values between 2.4 and 614.4 milliseconds
+# sensor.integration_time = 150
+
+# Change sensor gain to 1, 4, 16, or 60
+# sensor.gain = 4
+while True:
+    print("sleep")
+    time.sleep(100.0)
+
+# Main loop reading color and printing it every second.
+while True:
+    # Raw data from the sensor in a 4-tuple of red, green, blue, clear light component values
+    # print(sensor.color_raw)
+
+    color = sensor.color
+    color_rgb = sensor.color_rgb_bytes
+    print(
+        "RGB color as 8 bits per channel int: #{0:02X} or as 3-tuple: {1}".format(
+            color, color_rgb
+        )
+    )
+
+    # Read the color temperature and lux of the sensor too.
+    temp = sensor.color_temperature
+    lux = sensor.lux
+    print("Temperature: {0}K Lux: {1}\n".format(temp, lux))
+    # Delay for a second and repeat.
+    time.sleep(1.0)
